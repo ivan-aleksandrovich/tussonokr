@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон копии чека продажи. Объединение одинаковых позиций и группировка по полю артикул. -->
+<report name = "sale_copy" type="document" cached="true" title="Копия чека продажи">
+<text align="center" fillsymbol="*" maxwidth="all"> К О П И Я ЧЕКА </text><br/>
+    <select query="SELECT frdoccopy FROM document WHERE documentid = $document.id$ and frdoccopy is not null and frdoccopy != ''">
+        <text fillsymbol="-" maxwidth="all"/><br/>
+        <var name="frdoccopy" align="center" fillsymbol=" " maxwidth="all"/><br/>
+        <text fillsymbol="-" maxwidth="all"/><br/>
+    </select>
+
+</report>

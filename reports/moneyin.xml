@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон документа внесения денежных средств -->
+<report name = "moneyin" type="document" cached="true" title="чек внесения">
+</report>
+

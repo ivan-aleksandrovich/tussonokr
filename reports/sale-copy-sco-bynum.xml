@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон копии чека продажи. Объединение одинаковых позиций и группировка по полю артикул. -->
+<report name = "sale-copy-sco-bynum" type="document" cached="false" title="">
+<select query="select checknum, documentid doc_id from document where checknum = $docnum$ order by documentid desc limit 1">
+
+<text align="center" fillsymbol="*" maxwidth="all"> К О П И Я </text><br/>
+<text align="center" fillsymbol=" " maxwidth="all">ЧЕК ПРОДАЖИ #$checknum$</text><br/>
+<text align="center" fillsymbol=" " maxwidth="all">КАССИР: $cash.code$ $user.name$</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select articul dname from documents.goodsitem where documentid = $doc_id$ group by 1">
+<!--<text> </text><br/>
+<var name="dname" align="center" maxwidth="all"/><br/>
+<text> </text><br/>-->
+<select query="select case opcode when 52 then text_const.text1 else goodsitem.bcode end bcode, 
+                    CAST((case opcode when 52 then concat(text_const.text2 , goodsitem.deptcode)
+                        else goodsitem.name end) AS CHAR) name, 
+                    dictionaries.units.name unit, sum(if(goodsitem.opcode in (54, 56), -goodsitem.bquant, goodsitem.bquant)) bquant, goodsitem.pricei price, 
+                    sum(if(goodsitem.opcode in (54, 56), -goodsitem.sumi, goodsitem.sumi)) sumn, sum(if(goodsitem.opcode in (54, 56), -goodsitem.sumb, goodsitem.sumb)) sumb, vatcode1, vatcode2, vatcode3, vatcode4, 
+                    vatcode5, vatrate1, vatrate2, vatrate3, vatrate4, vatrate5, sum(vatsum1) vatsum1, 
+                    sum(vatsum2) vatsum2, sum(vatsum3) vatsum3, sum(vatsum4) vatsum4, sum(vatsum5) vatsum5 
+                from documents.goodsitem left join dictionaries.units on measure = dictionaries.units.code 
+                    left join text_const on text_const.code = 1 
+                where documentid = $doc_id$ and goodsitem.articul='$dname$' 
+                 group by 1, 2, dictionaries.units.name, goodsitem.pricei, vatcode1, 
+                 vatcode2, vatcode3, vatcode4, vatcode5, vatrate1, vatrate2, vatrate3, vatrate4, vatrate5">
+<var name="bcode" minwidth="13"/><nbsp/><var name="name" minwidth="10"/><br/>
+<var name="bquant" numberformat="8.3"/><text> </text><var name="unit"/><text> * </text>
+<var name="price" numberformat="9.2"/><text> = </text><var name="sumn" numberformat=".2" align="right" fillsymbol=" " maxwidth="all"/><br/>
+<select query="select if($sumn$ &gt; $sumb$, 'СО СКИДКОЙ', 'С НАДБАВКОЙ') discname , abs(($sumn$ - $sumb$) / $sumn$ * 100) discval from DUAL where not $sumn$ = $sumb$">
+<var name="discname" maxwidth="all" align="right"/><text align="right"> </text><var name="discval" numberformat="10.0" align="right"/><text align="right">%</text><var name="sumb" numberformat="10.2" align="right"/><br/>
+</select>
+<select query="select name vatname from dictionaries.vat where code=$vatcode1$">
+<text maxwidth="14" align="right">В ТОМ ЧИСЛЕ </text>
+<var name="vatname"/>
+<text> (</text>
+<var name="vatrate1" numberformat=".2"/>
+<text>%) = </text>
+<var name="vatsum1" numberformat=".2"/>
+<br/>
+</select>
+</select>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select count(*) p from goodsitem where documentid = $doc_id$ ">
+<text align="left">ПОЗИЦИЙ:</text><var align="right" name="p" numberformat="04" maxwidth="all"/><br/>
+</select>
+<select query="select sum2, sumb from document where documentid = $doc_id$ ">
+<select query="select if($sum2$ &gt; $sumb$, 'CКИДКА', 'НАДБАВКА') dname , if($sum2$ &gt; $sumb$, $sum2$-$sumb$,$sumb$-$sum2$) dval from DUAL where not $sumb$=$sum2$">
+<text>СУММА ЧЕКА:</text><var name="sum2" align="right" numberformat=".2" maxwidth="all"/><br/>
+<var name="dname"/><text>:</text><var name="dval" align="right" numberformat=".2" maxwidth="all"/><br/>
+</select>
+<select query="select cardnumber from discitem inner join (select goodsitemid from goodsitem where documentid = $doc_id$) as gi on discitem.goodsitemid = gi.goodsitemid and discitem.discmode = 2 group by 1">
+<text>КАРТА НОМЕР </text><var name="cardnumber"/><br/>
+</select>
+<text align="left">ИТОГО:</text><var align="right" name="sumb" numberformat=".2" maxwidth="all"/><br/>
+</select>
+
+<!--операции с бонусами-->
+<select query="SELECT number, bonusbalance FROM carditem WHERE documentid = $doc_id$ and cardmode = 1 GROUP BY 1,2">
+<text maxwidth="all" fillsymbol="=">=</text><br/>
+<text>БОНУСЫ:</text><br/>
+<text>Доступно к оплате:</text><var align="right" maxwidth="all" name="bonusbalance" numberformat=".2"/><br/>
+<select query="select (
+                        (select coalesce(sum(sumb), 0.0) 
+                        from moneyitem where documentid = $doc_id$ and opcode = 70 and cardnum = '$number$')
+                      +  
+                        (select coalesce (sum(discsum), 0) as discsum 
+                        from discitem inner join (select goodsitemid from goodsitem where documentid = $doc_id$) as gi on discitem.goodsitemid = gi.goodsitemid and discitem.disctype = 5)
+                       )
+                    s1;">
+<text>Потрачено:</text><var align="right" name="s1" numberformat=".2" maxwidth="all"/><br/>
+</select>
+
+<select query="select $bonusbalance$ - coalesce(sum(d.discsum), 0) ost from goodsitem g left join discitem d using(goodsitemid) where g.documentid = $doc_id$ and d.disctype = 5">
+<text>Остаток:</text><var align="right" maxwidth="all" name="ost" numberformat=".2"/><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<!-- <text>Накоплено:</text><br/>-->
+<select query="select coalesce(sum(amount), 0.0) s2 from bonusitem where documentid = $doc_id$ and cardnumber = '$number$' and opcode = 1200">
+<text>Будет зачислено:</text><var align="right" name="s2" numberformat=".2" maxwidth="all"/><br/><br/>
+</select>
+</select>
+
+<select query="select rtext from document where documentid = $doc_id$">
+<extvar name="rtext" quoted="false" width="36" split="byword" format="%(token.data[s])" delimiter="##"/>
+</select>
+
+<select query="select md.opcode, v.chr, sum(md.sumb) got from moneyitem md left join dictionaries.valut v on md.valcode = v.code where  md.documentid= $doc_id$ and md.opcode = 70 group by 1, 2 order by 1">
+<text>ПОЛУЧЕНО </text><var name="chr" minwidth="4" align="right"/><text>:</text>
+<var name="got" maxwidth="all" align="right" numberformat=".2"/><br/>
+</select>
+<select query="select md.opcode, v.chr, sum(md.sumb) chg from moneyitem md left join dictionaries.valut v on md.valcode = v.code where md.documentid= $doc_id$ and md.opcode = 72 group by 1, 2 order by 1">
+<text>СДАЧА    </text><var name="chr" minwidth="4" align="right"/><text>:</text>
+<var name="chg" maxwidth="all" align="right" numberformat=".2"/><br/>
+</select>
+<br/><br/>
+<select query="select time_end from document where documentid= $doc_id$">
+<text>Дата создания: </text><var name="time_end" dateformat="d2/mm/yyyy"/><br/>
+<text>Время создания: </text><var name="time_end" dateformat="hh:mi"/><br/>
+</select>
+<text align="center" fillsymbol="*" maxwidth="all"> К О П И Я </text>
+
+</select>
+</report>
+ 

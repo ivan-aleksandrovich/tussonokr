@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон уведомления выполения привязки -->
+<report name="attendant-barcode" type="document" cached="false" title="">
+
+<text>$user.name$</text><br/>
+
+<text>$${BCODE,SHOW_DOWN,100,100,EAN13,$user.barcode$}</text><br/>
+
+<select query="select date_format(CURRENT_TIMESTAMP, '%d/%m/%Y %H:%i') cdt">
+<text align="center" fillsymbol=" " maxwidth="all">Дата печати $cdt$</text><br/>
+</select>
+</report>

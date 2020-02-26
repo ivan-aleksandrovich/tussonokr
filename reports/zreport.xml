@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон суточного отчета с гашением -->
+<report name = "zreport" type = "shift" cached="false" title = "суточный отчет с гашением">
+<text>КАССОВЫЙ ОТЧЕТ Z</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<br/>
+<text minwidth="7">КАССА</text><text>$cash.code$</text><br/>
+<text minwidth="7">СМЕНА</text><text>$shift.num$</text><br/>
+<select query="select coalesce(time_end, cast('$now$' as datetime)) time_end from documents.workshift where workshiftid = $shift.id$">
+<text>ДАТА </text><var name="time_end" dateformat="dd.mm.yyyy"/><br/>
+</select>
+<text minwidth="7">КАССИР</text><text>$user.code$</text><nbsp/><sbr/><text>$user.name$</text><br/>
+<text maxwidth="all" align="right">СУММА</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<br/>
+
+<select query="DROP TEMPORARY TABLE IF EXISTS xtable_$shift.id$"/>
+<select query="CREATE TEMPORARY TABLE xtable_$shift.id$ (summ NUMERIC( 13, 2), opcode INTEGER, scode VARCHAR(30), valcode INTEGER, name VARCHAR(60), chr VARCHAR(4)) ENGINE=MYISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC"/>
+
+<select query="insert into xtable_$shift.id$ (summ, opcode, scode, valcode, name, chr) select if(money.opcode in (70, 76, 80), sum(money.sumb), -sum(money.sumb)), money.opcode, money.scode, money.valcode, mol.name, valut.chr 
+               from documents.moneyitem money left join dictionaries.mol mol on money.scode = mol.code left join dictionaries.valut valut on money.valcode = valut.code 
+                   left join documents.document doc on money.documentid = doc.documentid where doc.closed = 1 and doc.workshiftid = $shift.id$ and doc.doctype != 17 
+               group by money.opcode, money.scode, money.valcode, mol.name, valut.chr"/>
+
+<select query="INSERT INTO xtable_$shift.id$ (summ, opcode, scode, valcode, NAME, chr) SELECT SUM(goodsitem.sumb), opcode, goodsitem.scode, 1, mol.name, '' FROM goodsitem LEFT JOIN dictionaries.mol 
+	ON goodsitem.scode = mol.code LEFT JOIN document ON goodsitem.documentid = document.documentid
+	WHERE document.closed = 1 AND document.workshiftid = $shift.id$ AND goodsitem.opcode = 1000
+	GROUP BY opcode, goodsitem.scode, mol.name"/>
+
+<text>ОСТАТОК НА НАЧАЛО</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (44) GROUP BY scode, name order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select valcode, chr, scode, coalesce(sum(summ), 0) as uservalut_sum from xtable_$shift.id$ where opcode in (44) and scode = $scode$ GROUP BY valcode, chr, scode order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>ИТОГО ОСТАТОК НА НАЧАЛО</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (44)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select valcode, chr, coalesce(sum(summ), 0) as sm from xtable_$shift.id$ where opcode in (44) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<br/>
+
+<text>ПРИХОД</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+
+<text>Внесено в кассу</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (80,81) GROUP BY scode, name order by scode">
+<text minwidth="8">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select valcode, chr, coalesce(sum(summ), 0) as uservalut_sum from xtable_$shift.id$ where opcode in (80,81) and scode = $scode$ GROUP BY valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<text>ИТОГО Внесено в кассу</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (80,81)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, chr, valcode from xtable_$shift.id$ where opcode in (80,81) group by VALCODE, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select><br/>
+
+<text>Получено по продаже</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (70,71,72,73) GROUP BY scode, name order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select valcode, chr, scode, coalesce(sum(summ), 0) as uservalut_sum from xtable_$shift.id$ where opcode in (70,71,72,73) and scode = $scode$ GROUP BY valcode, chr, scode order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<text>ИТОГО Получено по продаже</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (70,71,72,73)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (70,71,72,73) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>ИТОГО ПРИХОД</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (70,71,72,73,80,81)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (70,71,72,73,80,81) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+
+<br/>
+<text>РАСХОД</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+
+<text>Выдано по возврату</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (74,75,76,77) GROUP BY scode, name order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select valcode, chr, scode, coalesce(sum(summ), 0) as uservalut_sum from xtable_$shift.id$ where opcode in (74,75,76,77) and scode = $scode$ GROUP BY valcode, chr, scode order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<text>ИТОГО Выдано по возврату</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (74,75,76,77)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (74,75,76,77) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select><br/>
+
+<text>Изъято из кассы</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (82,83) GROUP BY scode, name order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select valcode, chr, coalesce(sum(summ), 0) as uservalut_sum from xtable_$shift.id$ where opcode in (82,83) and scode = $scode$ GROUP BY valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<text>ИТОГО Изъято из кассы</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (82,83)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (82,83) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>ИТОГО РАСХОД</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (74,75,76,77,82,83)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (74,75,76,77,82,83) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+
+<br/>
+<text>ОСТАТОК НА КОНЕЦ</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (44,70,73,75,76,80,83,71,72,74,77,81,82) GROUP BY scode, name order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select coalesce(sum(summ), 0) as uservalut_sum, valcode, chr from xtable_$shift.id$ where opcode in (44,70,73,75,76,80,83,71,72,74,77,81,82) and scode = $scode$ GROUP BY valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>ОСТАТОК НА КОНЕЦ</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (44,70,73,75,76,80,83,71,72,74,77,81,82)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (44,70,73,75,76,80,83,71,72,74,77,81,82) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+
+<br/>
+<text>ЧИСТАЯ ВЫРУЧКА</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<select query="select scode, name, coalesce(sum(summ), 0) as user_sum from xtable_$shift.id$ where opcode in (70,73,75,76,71,72,74,77) GROUP BY scode, name order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><br/>
+<select query="select coalesce(sum(summ), 0) as uservalut_sum, valcode, chr from xtable_$shift.id$ where opcode in (70,73,75,76,71,72,74,77) and scode = $scode$ GROUP BY valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="uservalut_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text>ИТОГО ПО КАССИРУ</text><nbsp/><var name="user_sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>ИТОГО ЧИСТАЯ ВЫРУЧКА</text><nbsp/>
+<select query="select coalesce(sum(summ), 0) opsum from xtable_$shift.id$ where opcode in (70,73,75,76,71,72,74,77)"><var name="opsum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+<select query="select coalesce(sum(summ), 0) as sm, valcode, chr from xtable_$shift.id$ where opcode in (70,73,75,76,71,72,74,77) group by valcode, chr order by valcode">
+<var name="chr" padding="2"/><nbsp/><var name="sm" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+
+<br/>
+<text>ПЛАТЕЖИ</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<select query="select scode, name, summ from xtable_$shift.id$ where opcode = 1000 order by scode">
+<text minwidth="7">КАССИР</text><text>$scode$</text><nbsp/><sbr/><text>$name$</text><sbr/>
+<var name="summ" type="numeric" afterpoint="2" maxwidth="all" align="right"/><br/>
+</select>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>ИТОГО ПЛАТЕЖЕЙ</text><nbsp/>
+<select query="select sum(summ) from xtable_$shift.id$ where opcode = 1000"><var name="sum" type="numeric" afterpoint="2" maxwidth="all" align="right"/></select><br/>
+
+<!--<select query="drop index i_xtable_opcode_$cash_code$_$shift_number$"/>-->
+<!--<select query="drop index i_xtable_scode_$cash_code$_$shift_number$"/>-->
+<!--<select query="drop index i_xtable_valcode_$cash_code$_$shift_number$"/>-->
+<select query="DROP TABLE xtable_$shift.id$"/>
+
+</report>

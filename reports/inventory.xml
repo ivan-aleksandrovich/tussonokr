@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон документа инвентаризации. -->
+<report name="inventory" type="document" cached="false" title="Документ инвентаризации">
+  <text align="center" fillsymbol=" " maxwidth="all">КАССА $cash.code$</text><br/>
+  <text align="center" fillsymbol=" " maxwidth="all">ИНВЕНТАРИЗАЦИЯ #$shift.num$/$document.num$</text><br/>
+  <text align="center" fillsymbol=" " maxwidth="all">$user.name$</text><br/>
+  <text fillsymbol="-" maxwidth="all"/><br/>
+  <select query="select concat(goodsitem.code, ' ', goodsitem.name) name, sum(goodsitem.cquant) qty from documents.goodsitem where documentid = $document.id$ group by 1 order by goodsitem.name">
+    <var name="name" minwidth="25"/><nbsp/>
+    <var name="qty" numberformat="0.3" align="right" fillsymbol=" " maxwidth="all"/><br/>
+  </select>
+  <text fillsymbol="-" maxwidth="all"/><br/>
+  <select query="select coalesce(time_end, CURRENT_TIMESTAMP) as time_end from document where documentid= $document.id$">
+    <var name="time_end" dateformat="d2/mm/yyyy"/><nbsp/>
+    <var name="time_end" dateformat="hh:mi"/><br/>
+  </select>
+</report>
