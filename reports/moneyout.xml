@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Шаблон чека выема денежных средств. -->
-<report name = "moneyout" type="document" cached="true" title="чек выема">
-
-</report>
-

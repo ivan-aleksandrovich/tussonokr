@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Шаблон копии документа внесения денежных средств -->
-<report name = "moneyin_copy" type="document" cached="true" title="копия чека внесения">
-</report>
-

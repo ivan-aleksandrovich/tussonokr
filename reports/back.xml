@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!-- Шаблон чека возврата продажи. Объединение одинаковых позиций и группировка по полю артикул. -->
-<report name = "back" type="document" cached="true" title="Чек возврата продажи">
- <select query="SELECT identifier FROM document WHERE documentid = $document.id$">
-    <text align="left">ИДЕНТИФИКАТОР ЧЕКА</text>><var align="right" name="identifier" padding="1" maxwidth="all"/><br/>
- </select>
-</report>
