@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон чека продажи. Объединение одинаковых позиций и группировка по полю артикул. -->
+<report name = "cardinfo" type="document" cached="false" title="Квитанция по карте">
+
+<select query="SELECT c.number, c.bonusbalance, c.clientitemid, d.time_beg FROM carditem c, document d WHERE c.documentid = $document.id$ and d.documentid = c.documentid and c.cardmode = 1 GROUP BY 1,2">
+    <text>************************************</text><br/>
+    <var name="time_beg" dateformat="dd.mm.yyyy hh:mi" maxwidth="all" minwidth="20"/><sbr/><text> ПРОДАЖА №$document.num$</text><br/>
+    <text>Уважаемый(ая) </text>
+    <select query="select name nameclient from client where clientitemid = $clientitemid$">
+        <var name="nameclient" nextline="word"/> 
+    </select><br/>
+    <text>Ваш бонусный счет №</text><sbr/><var name="number"/><br/>
+    <text>Состояние счета:</text><br/>
+    <var name="bonusbalance" numberformat=".2" align="right" maxwidth="all"/><text> на </text><sbr/><var name="time_beg" dateformat="dd.mm.yyyy hh:mi"/><br/>    
+
+    <select query="SELECT multiplicatorend dataEnd from dictionaries.card where number = $number$ and multiplicatorend >= now()">
+        <text nextline="word">Ваш статус *VIP* (до </text><sbr/>
+        <var name="dataEnd" dateformat="dd.mm.yyyy hh:mi"/><text>)</text><br/>
+    </select>
+
+    <text nextline="word">Начисления за текущую покупку:</text><br/>
+    <select query="select coalesce(sum(IF(ispositionbonus = 0, amount, 0)), 0) as bonusCheck, coalesce(sum(IF(ispositionbonus = 1, amount, 0)), 0) as bonusPos, coalesce(sum(amount), 0) as bonusAll from bonusitem where documentid = $document.id$ and cardnumber = '$number$' and opcode = 1200">
+        <text>    базовое:           </text><var name="bonusPos" align="right" numberformat=".2" maxwidth="all" minwidth="12"/><br/>
+        <text>    дополнительное:    </text><var name="bonusCheck" align="right" numberformat=".2" maxwidth="all" minwidth="13"/><br/>
+        <text>Итого баллов:</text><br/>
+        <printer op="setfont" size="enlarge"/>
+        <var name="bonusAll" align="right" numberformat=".2" maxwidth="all" minwidth="36"/><br/>
+        <printer op="resetfont"/>
+    </select>
+
+    <select query="select coalesce(sum(if(disctype = 5, discsum, 0)), 0) bonussum from discitem join goodsitem using(goodsitemid) where documentid = $document.id$">
+        <select query="select 1 from dual where $bonussum$ > 0">
+            <text>Использовано баллов:</text><var name="bonussum" align="right" numberformat=".2" maxwidth="all" minwidth="16"/><br/>
+        </select>
+    </select>
+
+    <printer op="setfont" size="smaller"/>
+    <text align="center" maxwidth="all" nextline="word">Баллы за покупку будут начислены в течение 24 ч.</text><br/>
+    <printer op="resetfont"/>
+    
+    <!-- Рекламный текст для покупателя -->
+    <!-- Печатаем если текст для печати есть -->
+    <select query="SELECT rtext FROM documents.document d where d.documentid = $document.id$ and d.rtext IS NOT NULL AND TRIM(d.rtext) &lt;&gt; ''">
+        <text>************************************</text><br/>
+        <formattext var="document.rtext"/>
+    </select>
+    <text>************************************</text><br/>
+</select>
+</report>

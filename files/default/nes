@@ -1,0 +1,4 @@
+# Defaults for the "nes" initscript
+
+# Set to yes to start nes
+SERVICE_START=no

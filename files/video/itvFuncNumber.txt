@@ -1,0 +1,61 @@
+// Действия снаружи чека
+1		- login.xml
+2		- logout.xml
+3		- startProgram.xml
+8		- documentClosed.xml
+9		- documentCanceled.xml
+30		- openCashDrawer.xml
+31		- frXReport.xml
+32		- report.xml
+33		- frZReport.xml
+34		- permTestCancel.xml
+35		- showMoneySum.xml
+36		- printDocument.xml
+37		- quantityFromScale.xml
+38		- barcodeNotFound.xml
+
+39		- documentNotRestored.xml
+40		- documentRestored.xml
+41		- shiftLimited.xml
+42		- testPermission.xml
+43		- executeExternalShell.xml
+
+44              - putoutCheck.xml
+45              - revealCheck.xml
+ 
+// Действия внутри чека
+1001	- loginInCheck.xml
+1002	- logoutInCheck.xml
+1003	- documentSaleOpened.xml
+1004	- documentBackOpened.xml
+1005	- documentMoneyInOpened.xml
+1006	- documentMoneyOutOpened.xml
+1007	- subTotal.xml
+1010	- addInventItemSale.xml
+1011	- addInventItemBack.xml
+1012	- stornoInventItemSale.xml
+1013	- stornoInventItemBack.xml
+1014	- addPayment.xml
+1015	- stornoPaymentItem.xml
+1016	- change.xml
+1034	- permTestCancelInCheck.xml
+1035	- showMoneySumInCheck.xml
+1037	- quantityFromScaleInCheck.xml
+1038	- barcodeNotFoundInCheck.xml
+
+1044	- addMoneyItemIn.xml
+1045	- addMoneyItemOut.xml
+1046	- stornoMoneyItemIn.xml
+1047	- stornoMoneyItemOut.xml
+1048	- changeInventItem.xml
+1049	- discountButton.xml
+1050	- discountCard.xml
+1052	- operationBank.xml
+1053	- errorBank.xml
+1054	- errorChangeInventItem.xml
+1055	- errorDiscountButton.xml
+1056	- errorDiscountCard.xml
+1057	- discountApply.xml
+1058	- discountCancel.xml
+
+

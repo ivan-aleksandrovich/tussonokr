@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>1000000</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <CashTime>%(eventInfo.dateTime[dd.MM.yyyy hh:mm:ss])</CashTime>
+    <Mode>%(eventInfo.mode[s])</Mode>
+    <Data>%(eventInfo.data[s])</Data>
+</TransactionBlock>

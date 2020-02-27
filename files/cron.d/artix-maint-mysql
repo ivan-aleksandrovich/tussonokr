@@ -1,0 +1,3 @@
+# this script runs maint
+
+10 */3 * * * root test -x /linuxcash/cash/bin/maint.py && /usr/bin/python /linuxcash/cash/bin/maint.py weekly 1>/dev/null 2>/dev/null || exit 0  

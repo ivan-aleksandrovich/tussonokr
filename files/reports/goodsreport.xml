@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблона отчета по товарам -->
+<report name = "goodsreport" type="document" cached="false" title="Отчет по товарам">
+<text>ОТЧЕТ ПО ТОВАРАМ</text><br/>
+<select query="select coalesce((select time_beg from workshift where workshiftid = $shift_beg.id$), (select time_beg from document where workshiftid = $shift_beg.id$ order by checknum)) as dt">
+<text>С $dt$ ($shift_beg.num$)</text><br/>
+</select>
+<select query="select coalesce((select time_end from workshift where workshiftid = $shift_end.id$), current_timestamp) as dt">
+<text>По $dt$ ($shift_end.num$)</text><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="SELECT BCODE, NAME, SUM(IF(gd.opcode IN (50, 52, 1000), gd.sumb, -gd.sumb)) s, SUM(IF(gd.opcode IN (50, 52, 1000), gd.bquant, -gd.bquant)) quant FROM goodsitem gd LEFT JOIN document doc ON doc.documentid = gd.documentid LEFT JOIN workshift ws ON doc.workshiftid = ws.workshiftid WHERE ws.workshiftid BETWEEN $shift_beg.id$ AND $shift_end.id$ AND BCODE IN ($tmclist.tmc$) GROUP BY BCODE, NAME ORDER BY name">
+<var name="bcode" minwidth="13"/><text> </text>
+<var name="name" minwidth="10"/><br/>
+<var name="quant" numberformat="8.3"/>
+<var name="s" numberformat=".2" align="right" fillsymbol=" " maxwidth="all"/><br/>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<text>Напечатан: $now$</text><br/>
+</report>

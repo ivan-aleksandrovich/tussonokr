@@ -1,0 +1,40 @@
+{
+  "terminalId" : "200",
+  "protocolVersion" : "0.1",
+  "serverAddr" : "http://37.143.17.190:8090/bps/bpsApi/bpos",
+  "serverAltAddr" : "",
+  "retailNetworkName" : "Тестирование",
+  "timeout" : 100,
+  "offlineMode" : 0,
+  "shiftMode" : 0,
+  "localBonusOffline" : 0,
+  "globalBonusOffline" : 20,
+  "orgFeeOffline" : 1,
+  "logSize" : 200,
+  "sslMode" : 1,
+  "sslKey" : "privkey.pem",
+  "receiptHeader" : "******* ПОКУПКА ********\n  Полагающиеся бонусы   \n  будут перечислены в   \n      Все в плюсе       \n************************\n",
+  "receiptFooter" : "Конец чека Евразия :)\nВторая строка конца!",
+  "terminalPassword" : "70636825",
+  "receiptMainHeader" : "******* ПОКУПКА ********\n  Полагающиеся бонусы   \n  будут перечислены в   \n      Все в плюсе       \n************************\n",
+  "receiptOrganizerFee" : "",
+  "noGlobalBonusPrint" : 0,
+  "class_card" : {
+    "1" : {
+      "globalBonusOffline" : 21,
+      "localBonusOffline" : 1
+    },
+    "2" : {
+      "globalBonusOffline" : 22,
+      "localBonusOffline" : 2
+    },
+    "5" : {
+      "globalBonusOffline" : 25,
+      "localBonusOffline" : 5
+    },
+    "6" : {
+      "globalBonusOffline" : 26,
+      "localBonusOffline" : 6
+    }
+  }
+}

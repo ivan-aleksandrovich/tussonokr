@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>1056</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <Card>%(card.number[s])</Card>
+</TransactionBlock>

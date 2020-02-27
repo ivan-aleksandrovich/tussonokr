@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>34</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <CashOpCode>%(permission.opcode[d])</CashOpCode>
+    <CodeName>%(permission.codename[s])</CodeName>
+    <UserNameAccess>%(permission.username[s])</UserNameAccess>
+    <UserIdAccess>%(permission.userid[s])</UserIdAccess>
+    <Result>%(permission.result[d])</Result>
+</TransactionBlock>

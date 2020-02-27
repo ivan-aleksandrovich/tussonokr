@@ -1,0 +1,5 @@
+# Defaults for the queue initscript
+
+# Set to yes to start queue
+QUEUE_START=yes
+

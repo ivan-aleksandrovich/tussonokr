@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>45</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <ShiftNumber>%(document.shift[d])</ShiftNumber>
+    <CheckNumber>%(document.num[d])</CheckNumber>
+    <Amount>%(document.sumb[.2f])</Amount>
+</TransactionBlock>

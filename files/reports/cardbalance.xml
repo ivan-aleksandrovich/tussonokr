@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон чека печати баланса карты. -->
+<report name = "cardbalance" type="document" cached="true" title="Квитанция по карте">
+    <text maxwidth="all" fillsymbol="*"></text><br/>
+    <var name="time_beg" dateformat="dd.mm.yyyy hh:mi" maxwidth="all"/><br/>
+    <text>Уважаемый(ая) $client.name$</text><br/>
+    <text>Ваша карта №$cardRecord.number$</text><br/>
+    <text>Текущий баланс: $cardRecord.bonusBalance$</text><br/><br/>
+
+    <printer op="setfont" size="smaller"/>
+    <text align="center" maxwidth="all">8(800) 333-66-00</text><br/>
+    <printer op="resetfont"/>
+
+    <printer op="setfont" size="enlarge"/>
+    <text align="center" maxwidth="all">AVANTAGECLUB.RU</text><br/>
+    <printer op="resetfont"/>
+    <text maxwidth="all" fillsymbol="*"></text><br/>
+</report>

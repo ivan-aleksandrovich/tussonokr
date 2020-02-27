@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон чека ЕГАИС.-->
+<report name = "egais" type="document" cached="true" title="Чек продажи ЕГАИС">
+
+    <br/>
+    <text align="center" fillsymbol=" " maxwidth="all">$shop.name$</text><br/>
+    <text align="left" fillsymbol=" " maxwidth="all">ИНН: $shop.inn$</text>
+    <text align="right" fillsymbol=" " maxwidth="all">КПП: $shop.kpp$</text><br/>
+    <text align="left" fillsymbol=" " maxwidth="all">КАССА: $fr.serial$</text>
+    <text align="right" fillsymbol=" " maxwidth="all">СМЕНА: $shift.num$</text><br/>
+    <text align="left" fillsymbol=" " maxwidth="all">ЧЕК: $document.num$</text>
+    <text align="right" fillsymbol=" " maxwidth="all">ДАТА: </text>
+    <var name="time_beg" dateformat="d2-mm-yyyy hh:mi"/><br/><br/>
+
+    <printer op="barcode" type="QR" barcode='$url_egais$'/><br/><br/>
+    <extvar name="url_egais" width="-1" quoted="false"/><br/>
+    <extvar name="signature_egais" width="-1" quoted="false"/><br/><br/>
+
+</report>

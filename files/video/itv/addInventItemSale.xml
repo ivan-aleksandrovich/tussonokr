@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>1010</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <Code>%(position.code[s])</Code>
+    <Barcode>%(position.bcode[s])</Barcode>
+    <InputMode>%(position.bcode_mode[d])</InputMode>
+    <ItemName>%(position.name[s])</ItemName>
+    <Price>%(position.price[.2f])</Price>
+    <Quantity>%(position.bquant[d])</Quantity>
+    <Amount>%(position.sumb[.2f])</Amount>
+    <PosNum>%(position.posnum[d])</PosNum>
+</TransactionBlock>

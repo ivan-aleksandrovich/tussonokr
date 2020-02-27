@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон отчета по отделам. -->
+<report name = "deptreport" type="shift" cached="false" title="Отчет по отделам">
+<text>Отчет по отделам</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+<text>КАССА        : $cash.code$</text><br/>
+<text>СМЕНА        : $shift.num$</text><br/>
+<text>ДАТА         : </text><var name="now" dateformat="dd/mm/yyyy"/><br/>
+<text>ВРЕМЯ        : </text><var name="now" dateformat="hh:mi"/><br/>
+<text>КАССИР $user.code$ $user.name$</text><br/>
+<text fillsymbol="=" maxwidth="all"/><br/>
+
+<select query="SELECT goodsitem.deptcode, goodsitem.articul, 
+				sum(case when goodsitem.opcode in (50, 52, 1000) then goodsitem.sumb when goodsitem.opcode in (54, 56, 58, 60) then -goodsitem.sumb else 0 end) AS sumall,
+				sum(case when goodsitem.opcode in (50, 52, 1000) then goodsitem.sumb else 0 end) AS sumsale,
+				sum(case when goodsitem.opcode in (54, 56, 58, 60) then goodsitem.sumb else 0 end) AS sumret 
+			FROM goodsitem , document  			 
+			where goodsitem.documentid = document.documentid and document.workshiftid=$shift.id$  and document.closed = 1 
+			GROUP BY goodsitem.deptcode, goodsitem.articul order by goodsitem.deptcode">
+<text>Отдел $deptcode$ ($articul$)</text><br/>
+<text padding="2">Итого:</text><var name="sumall" maxwidth="all" align="right" padding="2"/><br/>
+<text padding="2">Получено по продаже:</text><var name="sumsale" maxwidth="all" align="right" padding="2"/><br/>
+<text padding="2">Выдано по возвратам:</text><var name="sumret" maxwidth="all" align="right" padding="2"/><br/>
+</select>
+
+<text fillsymbol="-" maxwidth="all"/><br/>
+<text>Получено по продаже</text>
+<select query="select sum(goodsitem.sumb) from goodsitem , document  			 
+				where goodsitem.documentid = document.documentid and document.workshiftid=$shift.id$ 
+					and goodsitem.opcode in (50, 52, 1000) and document.closed = 1">
+<var name="sum" maxwidth="all" align="right" padding="2"/></select><br/>
+<select query="select goodsitem.deptcode, sum(goodsitem.sumb) as sumsale 
+				from goodsitem , document  			 
+			where goodsitem.documentid = document.documentid and document.workshiftid=$shift.id$ 
+				and goodsitem.opcode in (50, 52, 1000) and document.closed = 1 group by goodsitem.deptcode">
+<text padding="2">Отдел $deptcode$:</text><var name="sumsale" maxwidth="all" align="right" padding="2"/><br/>
+</select>
+
+<text>Выдано по возвратам</text>
+<select query="select sum(goodsitem.sumb) from goodsitem , document  			 
+				where goodsitem.documentid = document.documentid 
+						and document.workshiftid=$shift.id$ and goodsitem.opcode in (54, 56, 58, 60)  
+						and document.closed = 1">
+<var name="sum" maxwidth="all" align="right" padding="2"/></select><br/>
+<select query="select goodsitem.deptcode, sum(goodsitem.sumb) as sumret from goodsitem , document  			 
+			where goodsitem.documentid = document.documentid and document.workshiftid=$shift.id$ 
+				and goodsitem.opcode in (54, 56, 58, 60) group by goodsitem.deptcode">
+<text padding="2">Отдел $deptcode$:</text><var name="sumret" maxwidth="all" align="right" padding="2"/><br/>
+</select>
+<text fillsymbol="=" maxwidth="all"/><br/>
+
+</report>

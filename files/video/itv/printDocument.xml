@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>36</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <OpNumber>%(opnumber.num[d])</OpNumber>
+    <ShiftNumber>%(document.shift[d])</ShiftNumber>
+    <CheckNumber>%(document.num[d])</CheckNumber>
+    <PercentDiscount>%(document.percentDiscount[d])</PercentDiscount>
+    <AbsoluteDiscount>%(document.absoluteDiscount[.2f])</AbsoluteDiscount>
+    <Amount>%(document.sumb[.2f])</Amount>
+</TransactionBlock>

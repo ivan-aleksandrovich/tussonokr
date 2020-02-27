@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="%(codec.name[s])"?>
+<TransactionBlock>
+    <FunctionNumber>1003</FunctionNumber>
+    <UserName>%(status.username[s])</UserName>
+    <UserId>%(status.userid[d])</UserId>
+    <OpNumber>1003</OpNumber>
+    <CashTime>%(document.dateTimeBeg[dd.MM.yyyy hh:mm:ss])</CashTime>
+    <ShiftNumber>%(document.shift[d])</ShiftNumber>
+    <CheckNumber>%(document.num[d])</CheckNumber>
+</TransactionBlock>

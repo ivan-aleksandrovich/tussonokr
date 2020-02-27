@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Шаблон печати аннулированного чека. Объединение одинаковых позиций и группировка по полю артикул. -->
+<report name = "canceldocument" type="document" cached="true" title="Аннулирвоаный чек">
+    <select query="select if(doctype = 1, 'ПРОДАЖИ', 'ВОЗВРАТА') type from documents.document where documentid = $document.id$">
+        <text align="center" fillsymbol=" " maxwidth="all">АННУЛИРОВАНЫЙ ЧЕК $type$ #$document.num$</text><br/>
+    </select>
+    <text align="center" fillsymbol=" " maxwidth="all">КАССИР: $cash.code$ $user.name$</text><br/>
+    <text fillsymbol="-" maxwidth="all"/><br/>
+    <select query="select articul dname from documents.stornogoodsitem where documentid = $document.id$ group by 1">
+        <!--<text> </text><br/>
+        <var name="dname" align="center" maxwidth="all"/><br/>
+        <text> </text><br/>-->
+
+        <select query="select case opcode when 52 then text_const.text1 else stornogoodsitem.bcode end bcode, 
+                       CAST((case opcode when 52 then concat(text_const.text2 , stornogoodsitem.deptcode)
+                       else stornogoodsitem.name end) AS CHAR) name, 
+                       dictionaries.units.name unit, sum(if(stornogoodsitem.opcode in (54, 56), -stornogoodsitem.bquant, stornogoodsitem.bquant)) bquant, stornogoodsitem.pricei price, 
+                       sum(if(stornogoodsitem.opcode in (54, 56), -stornogoodsitem.sumi, stornogoodsitem.sumi)) sumn, sum(if(stornogoodsitem.opcode in (54, 56), -stornogoodsitem.sumb, stornogoodsitem.sumb)) sumb, vatcode1, vatcode2, vatcode3, vatcode4, 
+                       vatcode5, vatrate1, vatrate2, vatrate3, vatrate4, vatrate5, sum(vatsum1) vatsum1, 
+                       sum(vatsum2) vatsum2, sum(vatsum3) vatsum3, sum(vatsum4) vatsum4, sum(vatsum5) vatsum5 
+                       from documents.stornogoodsitem left join dictionaries.units on measure = dictionaries.units.code 
+                       left join text_const on text_const.code = 1 
+                       where documentid = $document.id$ and stornogoodsitem.articul='$dname$' 
+                       group by 1, 2, dictionaries.units.name, stornogoodsitem.pricei, vatcode1, 
+                       vatcode2, vatcode3, vatcode4, vatcode5, vatrate1, vatrate2, vatrate3, vatrate4, vatrate5">
+            <var name="bcode" minwidth="13"/><nbsp/><var name="name" minwidth="10"/><br/>
+            <var name="bquant" numberformat="8.3"/><text> </text><var name="unit"/><text> * </text>
+            <var name="price" numberformat="9.2"/><text> = </text><var name="sumn" numberformat=".2" align="right" fillsymbol=" " maxwidth="all"/><br/>
+
+            <select query="select if($sumn$ &gt; $sumb$, 'СО СКИДКОЙ', 'С НАДБАВКОЙ') discname , abs(($sumn$ - $sumb$) / $sumn$ * 100) discval from DUAL where not $sumn$ = $sumb$">
+                <var name="discname" maxwidth="all" align="right"/><text align="right"> </text><var name="discval" numberformat="10.0" align="right"/><text align="right">%</text><var name="sumb" numberformat="10.2" align="right"/><br/>
+            </select>
+
+            <select query="select name vatname from dictionaries.vat where code=$vatcode1$">
+                <text maxwidth="14" align="right">В ТОМ ЧИСЛЕ </text>
+                <var name="vatname"/>
+                <text> (</text>
+                <var name="vatrate1" numberformat=".2"/>
+                <text>%) = </text>
+                <var name="vatsum1" numberformat=".2"/>
+                <br/>
+            </select>
+        </select>
+    </select>
+
+    <text fillsymbol="-" maxwidth="all"/><br/>
+
+    <select query="select count(*) p from stornogoodsitem where documentid = $document.id$ ">
+        <text align="left">ПОЗИЦИЙ:</text><var align="right" name="p" numberformat="04" maxwidth="all"/><br/>
+    </select>
+</report>
+ 

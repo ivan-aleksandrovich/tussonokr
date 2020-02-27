@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report name = "extx-discount" type="shift" cached="false" title="отчет по скидкам">
+
+<select query="DROP TEMPORARY TABLE IF EXISTS sktable_$shift.id$"/>
+<select query="CREATE TEMPORARY TABLE sktable_$shift.id$ (summ NUMERIC( 13, 2), discsize numeric (13,2), disctype integer, ispositiondiscount integer, discmode integer) ENGINE=MYISAM DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC"/>
+
+<select query="insert into sktable_$shift.id$ (summ, discsize, disctype, ispositiondiscount, discmode) select sum(d.discsum) summ, d.discsize, d.disctype, d.ispositiondiscount, d.discmode
+               from document doc inner join goodsitem g on doc.documentid = g.documentid inner join discitem d on g.goodsitemid = d.goodsitemid where doc.closed = 1 and doc.workshiftid = $shift.id$ 
+               group by d.discsize, d.disctype, d.ispositiondiscount, d.discmode, doc.checknum, d.discnumber"/>
+
+<!--
+<select query="drop table sktable_$cash_code$_$shift_number$" />
+<select query="create table sktable_$cash_code$_$shift_number$ (
+             summ numeric (13,2),
+             discsize numeric (13,2),
+             disctype integer,
+             ispositiondiscount integer,
+             discmode integer)"
+/>
+<select query="insert into sktable_$cash_code$_$shift_number$ (summ, discsize, disctype, ispositiondiscount, discmode)
+	select sum(discsum) summ, discsize, disctype, ispositiondiscount, discmode
+	from discdata where cashcode=$cash_code$ and shift=$shift_number$
+	group by 2,3,4,5,checknum,discnumber" />-->
+
+<text>ОТЧЕТ ПО СКИДКАМ</text><br/>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select right(cashcode, 2) as shortcode from workshift where workshiftid = $shift.id$">
+<text minwidth="7">КАССА</text><text>$shortcode$</text><br/>
+</select>
+<text minwidth="7">СМЕНА</text><text>$shift.num$</text><br/>
+<!--<select query="select coalesce(time_end, cast('$now$' as datetime)) time_end from documents.workshift where workshiftid = $shift.id$">-->
+<select query="select time_beg time_end from documents.workshift where workshiftid = $shift.id$">
+<text minwidth="7">ДАТА</text><var name="time_end" dateformat="dd.mm.yyyy"/><br/>
+</select>
+<text minwidth="7">КАССИР</text><text>$user.name$</text><br/>
+
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="select * from sktable_$shift.id$ limit 1">
+<text>СКИДКИ</text><br/>
+	<select query="select count(*) cnt, sum(summ) summ from sktable_$shift.id$">
+		<text> КОЛИЧЕСТВО</text><var name="cnt" align="right" maxwidth="all" /><br/>
+		<text> СУММА</text><var name="summ" align="right" maxwidth="all" numberformat=".2" /><br/>
+		<select query = "select disctype from sktable_$shift.id$ group by 1 order by 1">
+			<select query="select 1 from dual where $disctype$=1">
+			<text> ПРОЦЕНТНЫЕ</text><br/>
+			</select>
+			<select query="select 1 from dual where $disctype$=2">
+			<text> АБСОЛЮТНЫЕ</text><br/>
+			</select>
+			<select query="select 1 from dual where $disctype$=3">
+			<text> ИНДЕКСЫ ЦЕН</text><br/>
+			</select>
+			<select query="select 1 from dual where $disctype$=4">
+			<text> СКИДКИ ЦЕНОЙ</text><br/>
+			</select>
+			<select query="select 1 from dual where $disctype$=5">
+			<text> БОНУСНЫЕ</text><br/>
+			</select>
+			<select query="select sum(1) cnt1, sum(summ) summ1 from sktable_$shift.id$ where disctype=$disctype$ group by disctype">
+				<text>  КОЛИЧЕСТВО</text><var name="cnt1" align="right" maxwidth="all" numberformat=".0" /><br/>
+				<text>  СУММА</text><var name="summ1" align="right" maxwidth="all" numberformat=".2" /><br/>
+			</select>
+			<select query="select ispositiondiscount from sktable_$shift.id$ where disctype=$disctype$ group by 1 order by 1">
+				<select query="select 1 from dual where $ispositiondiscount$=1">
+				<text>  НА ПОЗИЦИЮ</text><br/>
+				</select>
+				<select query="select 1 from dual where $ispositiondiscount$=0">
+				<text>  НА ЧЕК</text><br/>
+				</select>
+				<select query="select count(1) cnt2, sum(summ) summ2 from sktable_$shift.id$ where disctype=$disctype$ and ispositiondiscount=$ispositiondiscount$">
+					<text>   КОЛИЧЕСТВО</text><var name="cnt2" align="right" maxwidth="all" /><br/>
+					<text>   СУММА</text><var name="summ2" align="right" maxwidth="all" numberformat=".2" /><br/>
+				</select>
+				<select query="select discmode from sktable_$shift.id$ where disctype=$disctype$ and ispositiondiscount=$ispositiondiscount$ group by 1 order by 1">
+					<select query="select 1 from dual where $discmode$=1">
+					<text>   АВТОМАТИЧЕСКИЕ</text><br/>
+					</select>
+					<select query="select 1 from dual where $discmode$=2">
+					<text>   ПО КАРТЕ</text><br/>
+					</select>
+					<select query="select 1 from dual where $discmode$=3">
+					<text>   ФИКСИРОВАННЫЕ</text><br/>
+					</select>
+					<select query="select 1 from dual where $discmode$=5">
+					<text>   НА КОМПЛЕКТ</text><br/>
+					</select>
+					<select query="select 1 from dual where $discmode$=6">
+					<text>   НА СДАЧУ</text><br/>
+					</select>
+					<select query="select count(1) cnt3, sum(summ) summ3 from sktable_$shift.id$ where disctype=$disctype$ and ispositiondiscount=$ispositiondiscount$ and discmode=$discmode$">
+						<text>    КОЛИЧЕСТВО</text><var name="cnt3" align="right" maxwidth="all" /><br/>
+						<text>    СУММА</text><var name="summ3" align="right" maxwidth="all" numberformat=".2" /><br/>
+					</select>
+					<select query="select count(1) cnt4, sum(summ) summ4, if(disctype = 2, 0, discsize) discsize4 from sktable_$shift.id$ where disctype=$disctype$ and ispositiondiscount=$ispositiondiscount$ and discmode=$discmode$ group by 3">
+						<select query="select 1 from dual where $disctype$=1">
+						<text>    </text><var name="discsize4" /><text>%</text><br/>
+						</select>
+						<select query="select 1 from dual where $disctype$=3">
+						<text>    </text><var name="discsize4" numberformat=".0"/><br/>
+						</select>
+						<select query="select 1 from dual where $disctype$ in (2,4,5)">
+						<text>    </text><var name="discsize4" numberformat=".2"/><br/>
+						</select>
+						<text>     КОЛИЧЕСТВО</text><var name="cnt4" align="right" maxwidth="all" /><br/>
+						<text>     СУММА</text><var name="summ4" align="right" maxwidth="all" numberformat=".2" /><br/>
+					</select>
+				</select>
+			</select>
+		</select>
+	</select>
+</select>
+<text fillsymbol="-" maxwidth="all"/><br/>
+<select query="DROP TEMPORARY TABLE IF EXISTS sktable_$shift.id$"/>
+</report>
