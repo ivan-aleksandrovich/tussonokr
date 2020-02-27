@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="%(codec.name[s])"?>
-<TransactionBlock>
-    <FunctionNumber>1045</FunctionNumber>
-    <UserName>%(status.username[s])</UserName>
-    <UserId>%(status.userid[d])</UserId>
-    <CurrencyCode>%(moneyitem.valcode[d])</CurrencyCode>
-    <Amount>%(moneyitem.sumb[.2f])</Amount>
-</TransactionBlock>
