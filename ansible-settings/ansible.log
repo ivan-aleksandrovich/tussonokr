@@ -12,3 +12,31 @@
 
 2020-02-26 13:48:50,944 p=15 u=root |  192.168.0.126              : ok=2    changed=0    unreachable=0    failed=0   
 2020-02-26 13:48:50,945 p=15 u=root |  192.168.0.183              : ok=0    changed=0    unreachable=1    failed=0   
+2020-02-27 09:49:14,392 p=50 u=root |   
+2020-02-27 09:49:14,392 p=50 u=root |  /usr/bin/ansible-playbook /root/ansible/playbooks/update_ubuntu.yml /bin/bash
+2020-02-27 09:49:14,392 p=50 u=root |   
+2020-02-27 09:49:14,438 p=50 u=root |  PLAY [cashbox] **************************************************************** 
+2020-02-27 09:49:14,441 p=50 u=root |  GATHERING FACTS *************************************************************** 
+2020-02-27 09:49:17,739 p=50 u=root |  fatal: [192.168.0.183] => SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue
+2020-02-27 09:49:17,923 p=50 u=root |  ok: [192.168.0.126]
+2020-02-27 09:49:17,945 p=50 u=root |  TASK: [Push dir] ************************************************************** 
+2020-02-27 09:49:23,583 p=50 u=root |  ok: [192.168.0.126]
+2020-02-27 09:49:23,586 p=50 u=root |  PLAY RECAP ******************************************************************** 
+2020-02-27 09:49:23,588 p=50 u=root |             to retry, use: --limit @/root/update_ubuntu.retry
+
+2020-02-27 09:49:23,590 p=50 u=root |  192.168.0.126              : ok=2    changed=0    unreachable=0    failed=0   
+2020-02-27 09:49:23,591 p=50 u=root |  192.168.0.183              : ok=0    changed=0    unreachable=1    failed=0   
+2020-02-27 09:49:52,842 p=432 u=root |   
+2020-02-27 09:49:52,842 p=432 u=root |  /usr/bin/ansible-playbook /root/ansible/playbooks/update_ubuntu.yml /bin/bash
+2020-02-27 09:49:52,842 p=432 u=root |   
+2020-02-27 09:49:52,849 p=432 u=root |  PLAY [cashbox] **************************************************************** 
+2020-02-27 09:49:52,851 p=432 u=root |  GATHERING FACTS *************************************************************** 
+2020-02-27 09:49:54,658 p=432 u=root |  ok: [192.168.0.126]
+2020-02-27 09:49:55,935 p=432 u=root |  fatal: [192.168.0.183] => SSH encountered an unknown error during the connection. We recommend you re-run the command using -vvvv, which will enable SSH debugging output to help diagnose the issue
+2020-02-27 09:49:55,957 p=432 u=root |  TASK: [Push dir] ************************************************************** 
+2020-02-27 09:50:01,528 p=432 u=root |  ok: [192.168.0.126]
+2020-02-27 09:50:01,531 p=432 u=root |  PLAY RECAP ******************************************************************** 
+2020-02-27 09:50:01,532 p=432 u=root |             to retry, use: --limit @/root/update_ubuntu.retry
+
+2020-02-27 09:50:01,533 p=432 u=root |  192.168.0.126              : ok=2    changed=0    unreachable=0    failed=0   
+2020-02-27 09:50:01,533 p=432 u=root |  192.168.0.183              : ok=0    changed=0    unreachable=1    failed=0   
