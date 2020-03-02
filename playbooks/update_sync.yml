@@ -2,4 +2,4 @@
 - hosts: cashbox
   tasks:
      - name: Push dir
-       copy: src=/linuxcash/cash/sync/  dest=/linuxcash/cash/sync/
+       copy: src=/linuxcash/cash/sync/  dest=/linuxcash/cash/
