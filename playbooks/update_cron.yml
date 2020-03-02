@@ -1,0 +1,5 @@
+---
+- hosts: cashbox
+  tasks:
+     - name: Push dir
+       copy: src=/linuxcash/cash/cron.d dest=/linuxcash/cash/
