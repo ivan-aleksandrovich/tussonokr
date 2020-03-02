@@ -2,4 +2,4 @@
 - hosts: cashbox
   tasks:
      - name: Push dir
-       copy: src=/linuxcash/cash/conf/bcode.ini.d  dest=/linuxcash/cash/conf
+       copy: src=/linuxcash/cash/bcode.ini.d  dest=/linuxcash/cash
