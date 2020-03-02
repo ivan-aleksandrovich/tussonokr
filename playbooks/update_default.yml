@@ -2,4 +2,4 @@
 - hosts: cashbox
   tasks:
      - name: Push dir
-       copy: src=/linuxcash/cash/default/  dest=/etc/default
+       copy: src=/linuxcash/cash/default  dest=/etc/default
