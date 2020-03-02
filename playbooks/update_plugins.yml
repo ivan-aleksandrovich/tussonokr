@@ -2,4 +2,4 @@
 - hosts: cashbox
   tasks:
      - name: Push dir
-       copy: src=/linuxcash/cash/conf/plugins/  dest=/linuxcash/cash/conf/plugins/
+       copy: src=/linuxcash/cash/plugins  dest=/linuxcash/cash/conf
